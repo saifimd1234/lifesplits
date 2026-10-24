@@ -2,12 +2,13 @@ import { router, Stack, useLocalSearchParams } from 'expo-router';
 import { Alert, Pressable, StyleSheet, View } from 'react-native';
 
 import { slipLabel } from '@/components/goal-card';
+import { LineChart } from '@/components/line-chart';
 import { Bar, Button, Card, Dot, Insight, Screen, Section, Separator, tabular, Txt } from '@/components/ui';
 import { Spacing } from '@/constants/theme';
 import { useLapDisplay } from '@/hooks/use-lap-display';
 import { useNow } from '@/hooks/use-now';
 import { useTheme } from '@/hooks/use-theme';
-import { goalProgress, lapDuration, trackedTime, weeklyGoalHours } from '@/lib/stats';
+import { burnUp, goalProgress, lapDuration, trackedTime, weeklyGoalHours } from '@/lib/stats';
 import { addDays, formatDate, formatDuration, formatHours, formatPct, formatTime, HOUR } from '@/lib/time';
 import { useAppStore } from '@/store/app-store';
 
@@ -63,6 +64,9 @@ export default function GoalDetail() {
       : null;
 
   const maxDays = Math.max(p.plannedDays, p.projectedDays ?? 0);
+  const burn = burnUp(goal, laps, now);
+  const lastBurn = burn[burn.length - 1];
+  const fmtH = (v: number) => `${v < 10 ? v.toFixed(1) : Math.round(v)} h`;
 
   const onDelete = () =>
     Alert.alert(`Delete “${goal.name}”?`, 'Its laps stay in your history, they just stop counting toward a goal.', [
@@ -154,6 +158,34 @@ export default function GoalDetail() {
         </Txt>
         <Bar fraction={p.invested / p.effort} color={goal.color} />
       </Card>
+
+      {burn.length >= 2 ? (
+        <Section label="Progress vs plan">
+          <Card style={{ gap: Spacing.three }}>
+            <Txt variant="callout">
+              The plan says{' '}
+              <Txt variant="callout" style={{ fontWeight: '600' }}>
+                {fmtH(lastBurn.plan)}
+              </Txt>{' '}
+              by today. You have{' '}
+              <Txt variant="callout" color={lastBurn.actual >= lastBurn.plan ? t.positive : t.accentText} style={{ fontWeight: '600' }}>
+                {fmtH(lastBurn.actual)}
+              </Txt>
+              {lastBurn.actual >= lastBurn.plan ? ' — ahead of plan.' : ` — ${fmtH(lastBurn.plan - lastBurn.actual)} behind.`}
+            </Txt>
+            <LineChart
+              series={[
+                { key: 'actual', label: 'You', color: goal.color, values: burn.map((b) => b.actual) },
+                { key: 'plan', label: 'Plan', color: t.textSecondary, dashed: true, values: burn.map((b) => b.plan) },
+              ]}
+              labels={burn.map((b) => formatDate(b.day))}
+              titles={burn.map((b) => formatDate(b.day, { weekday: 'long', month: 'short', day: 'numeric' }))}
+              format={fmtH}
+              axisFormat={(v) => `${Math.round(v)}h`}
+            />
+          </Card>
+        </Section>
+      ) : null}
 
       <Section label="Hours per week">
         <Card style={{ gap: Spacing.three }}>

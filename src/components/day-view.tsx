@@ -1,11 +1,12 @@
 import { router } from 'expo-router';
 import { Pressable, StyleSheet, View } from 'react-native';
 
-import { Card, Empty, Separator, StackedBar, tabular, Txt } from '@/components/ui';
+import { Button, Card, Empty, Separator, StackedBar, tabular, Txt } from '@/components/ui';
 import { Spacing } from '@/constants/theme';
 import { useLapDisplay } from '@/hooks/use-lap-display';
 import { useNow } from '@/hooks/use-now';
 import { useTheme } from '@/hooks/use-theme';
+import { moodFor } from '@/lib/ratings';
 import { lapDuration, lapsInRange, trackedTime } from '@/lib/stats';
 import { addDays, formatDuration, formatShortTime, formatTime } from '@/lib/time';
 import { useAppStore } from '@/store/app-store';
@@ -22,7 +23,17 @@ export function DayView({ dayStart }: { dayStart: number }) {
 
   const dayLaps = lapsInRange(laps, dayStart, end, now);
   if (dayLaps.length === 0) {
-    return <Empty title="Nothing tracked" body="No laps on this day. Days you track show up here lap by lap." />;
+    return (
+      <Empty
+        title="Nothing tracked"
+        body="No laps on this day. Days you track show up here lap by lap."
+        action={
+          dayStart <= now ? (
+            <Button label="Add missed time" variant="secondary" onPress={() => router.push({ pathname: '/add-lap', params: { day: String(dayStart) } })} style={{ marginTop: Spacing.two, alignSelf: 'stretch' }} />
+          ) : undefined
+        }
+      />
+    );
   }
   const awake = trackedTime(sessions, dayStart, end, now);
   const goalMs = dayLaps.reduce((a, l) => a + (l.goalId ? lapDuration(l, now) : 0), 0);
@@ -54,7 +65,7 @@ export function DayView({ dayStart }: { dayStart: number }) {
       <Card padded={false} style={{ paddingHorizontal: Spacing.four }}>
         {dayLaps.map((l, i) => {
           const goal = display.goal(l);
-          const meta = [l.energy ? `Energy ${l.energy}` : null, l.focus ? `Focus ${l.focus}` : null, l.note ? `“${l.note}”` : null].filter(Boolean).join(' · ');
+          const meta = [l.energy ? `Energy ${l.energy}` : null, l.focus ? `Focus ${l.focus}` : null, l.mood ? moodFor(l.mood).emoji : null, l.note ? `“${l.note}”` : null].filter(Boolean).join(' · ');
           return (
             <View key={l.id}>
               {i > 0 ? <Separator /> : null}
@@ -91,6 +102,7 @@ export function DayView({ dayStart }: { dayStart: number }) {
           );
         })}
       </Card>
+      <Button label="+ Add missed time" variant="plain" onPress={() => router.push({ pathname: '/add-lap', params: { day: String(dayStart) } })} />
     </View>
   );
 }

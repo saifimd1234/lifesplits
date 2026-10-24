@@ -1,6 +1,7 @@
 import { useMemo } from 'react';
 
 import { useLifeColors, useTheme } from '@/hooks/use-theme';
+import { categoryLabel } from '@/lib/emoji';
 import type { Lap } from '@/lib/types';
 import { useAppStore } from '@/store/app-store';
 
@@ -16,7 +17,10 @@ export function useLapDisplay() {
     return {
       goalById,
       catById,
-      name: (lap: Lap) => (lap.categoryId ? catById.get(lap.categoryId)?.name : undefined) ?? 'Unlabeled',
+      name: (lap: Lap) => {
+        const cat = lap.categoryId ? catById.get(lap.categoryId) : undefined;
+        return cat ? categoryLabel(cat) : 'Unlabeled';
+      },
       color: (lap: Lap) => {
         const goal = lap.goalId ? goalById.get(lap.goalId) : undefined;
         if (goal) return goal.color;

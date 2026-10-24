@@ -3,6 +3,7 @@ import { useMemo, useState } from 'react';
 import { KeyboardAvoidingView, Platform, Pressable, ScrollView, StyleSheet, TextInput, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
+import { CalendarSheet } from '@/components/calendar-sheet';
 import { Icon } from '@/components/icon';
 import { Chip, SectionLabel, Separator, tabular, Txt } from '@/components/ui';
 import { GoalColors, Radius, Spacing } from '@/constants/theme';
@@ -42,6 +43,7 @@ export default function NewGoal() {
   const [linked, setLinked] = useState<string[]>(() => (editing ? categories.filter((c) => c.goalId === editing.id).map((c) => c.id) : []));
   const [newNames, setNewNames] = useState<string[]>([]);
   const [draft, setDraft] = useState<string | null>(null);
+  const [calendarOpen, setCalendarOpen] = useState(false);
 
   // Typical waking hours from the last two weeks of real days; 16 h until there is data.
   const wakingHours = useMemo(() => {
@@ -132,7 +134,17 @@ export default function NewGoal() {
           <SectionLabel>Target date</SectionLabel>
           <View style={[styles.group, { backgroundColor: t.card }]}>
             <View style={styles.row}>
-              <Txt variant="headline">{formatDate(targetDate, { month: 'short', day: 'numeric', year: 'numeric' })}</Txt>
+              <Pressable
+                onPress={() => setCalendarOpen(true)}
+                accessibilityRole="button"
+                accessibilityLabel={`Target date ${formatDate(targetDate, { month: 'long', day: 'numeric', year: 'numeric' })}. Opens a calendar.`}
+                hitSlop={6}
+                style={({ pressed }) => [styles.dateButton, { opacity: pressed ? 0.6 : 1 }]}>
+                <Icon name="calendar" color={t.accent} size={20} />
+                <Txt variant="headline" color={t.accent}>
+                  {formatDate(targetDate, { month: 'short', day: 'numeric', year: 'numeric' })}
+                </Txt>
+              </Pressable>
               <View style={styles.stepRow}>
                 <Txt variant="subhead" tone="secondary">
                   {daysToTarget} days
@@ -146,6 +158,7 @@ export default function NewGoal() {
               <Chip key={p.label} label={p.label} selected={daysToTarget === p.days} onPress={() => setTargetDate(addDays(today, p.days))} />
             ))}
           </View>
+          <CalendarSheet visible={calendarOpen} value={targetDate} minDate={addDays(today, 1)} today={today} onPick={setTargetDate} onClose={() => setCalendarOpen(false)} />
         </View>
 
         <View>
@@ -158,13 +171,18 @@ export default function NewGoal() {
               <Stepper onMinus={() => setEffort((e) => Math.max(5, e - 10))} onPlus={() => setEffort((e) => e + 10)} unit="10 hours" />
             </View>
           </View>
+          <Txt variant="subhead" tone="secondary" style={{ marginTop: Spacing.two }}>
+            Your best guess of the total hours of real work this goal needs — time spent doing it, not days on the calendar. 100 h is only a starting
+            point: a small habit might need 20 h, learning a new skill 150 h or more. LifeSplits uses it with your share below to work out when you’ll
+            finish, and you can change it any time.
+          </Txt>
         </View>
 
         <View>
           <SectionLabel>Share of waking time</SectionLabel>
           <View style={[styles.group, { backgroundColor: t.card, paddingVertical: Spacing.four, gap: Spacing.two }]}>
             <View style={styles.row}>
-              <Txt style={[{ fontSize: 34, fontWeight: '600', color: t.text }, tabular]}>{share}%</Txt>
+              <Txt style={[styles.share, tabular]}>{share}%</Txt>
               <Stepper onMinus={() => setShare((s) => Math.max(1, s - 1))} onPlus={() => setShare((s) => Math.min(90, s + 1))} unit="percent" />
             </View>
             <Txt variant="subhead" tone="secondary">
@@ -248,6 +266,9 @@ const styles = StyleSheet.create({
   nameInput: { flex: 1, textAlign: 'right', fontSize: 17, fontWeight: '600', paddingVertical: 12 },
   swatch: { width: 30, height: 30, borderRadius: 15, borderWidth: 3 },
   wrap: { flexDirection: 'row', flexWrap: 'wrap', gap: 8 },
+  dateButton: { flexDirection: 'row', alignItems: 'center', gap: 8, minHeight: 44 },
+  // Explicit lineHeight: the default body lineHeight (23) clips 34 px digits at the top and bottom.
+  share: { fontSize: 34, lineHeight: 42, fontWeight: '600' },
   stepRow: { flexDirection: 'row', alignItems: 'center', gap: 10 },
   stepper: { flexDirection: 'row', padding: 2, gap: 2, borderRadius: 9 },
   stepButton: { width: 44, height: 34, borderRadius: 7, alignItems: 'center', justifyContent: 'center' },

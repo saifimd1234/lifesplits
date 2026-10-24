@@ -12,7 +12,8 @@ export type IconName =
   | 'stopwatch'
   | 'target'
   | 'chart'
-  | 'pencil';
+  | 'pencil'
+  | 'calendar';
 
 /** Small stroke icon set so both platforms look identical. */
 export function Icon({ name, size = 22, color, strokeWidth = 1.9 }: { name: IconName; size?: number; color: string; strokeWidth?: number }) {
@@ -49,6 +50,7 @@ export function Icon({ name, size = 22, color, strokeWidth = 1.9 }: { name: Icon
           <Circle cx={12} cy={12} r={1} {...common} />
         </>
       )}
+      {name === 'calendar' && <Path d="M5 5h14a1 1 0 0 1 1 1v13a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V6a1 1 0 0 1 1-1zM4 10h16M8 3v4M16 3v4" {...common} />}
       {name === 'chart' && <Path d="M5 20v-6M12 20V5M19 20v-10" {...common} />}
     </Svg>
   );

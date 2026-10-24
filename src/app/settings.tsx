@@ -1,4 +1,5 @@
 import Constants from 'expo-constants';
+import { router } from 'expo-router';
 import { Alert, Pressable, StyleSheet, View } from 'react-native';
 
 import { Icon } from '@/components/icon';
@@ -13,6 +14,7 @@ export default function SettingsScreen() {
   const loadSampleData = useAppStore((s) => s.loadSampleData);
   const resetAll = useAppStore((s) => s.resetAll);
   const lapCount = useAppStore((s) => s.laps.length);
+  const categoryCount = useAppStore((s) => s.categories.length);
 
   const confirmSample = () =>
     Alert.alert('Load sample data?', 'This replaces everything with three weeks of example laps and three goals.', [
@@ -30,6 +32,14 @@ export default function SettingsScreen() {
       <Section label="Guide" style={{ marginTop: Spacing.two }}>
         <Card padded={false}>
           <Row label="Replay the intro" detail="Walk through how LifeSplits works again, with tips turned back on." onPress={replayIntro} />
+        </Card>
+      </Section>
+
+      <Section label="Tracking">
+        <Card padded={false}>
+          <Row label="Categories" detail={`Rename, add icons, group or link your ${categoryCount} activities to goals.`} onPress={() => router.push('/categories')} />
+          <Separator inset={16} />
+          <Row label="Add missed time" detail="Log a lap you forgot to track, on any of the last 7 days." onPress={() => router.push('/add-lap')} />
         </Card>
       </Section>
 

@@ -44,6 +44,9 @@ export default function RootLayout() {
           <Stack.Screen name="settings" options={{ title: 'Settings' }} />
           <Stack.Screen name="lap/[id]" options={{ presentation: 'modal', headerShown: false }} />
           <Stack.Screen name="new-goal" options={{ presentation: 'modal', headerShown: false }} />
+          <Stack.Screen name="categories" options={{ title: 'Categories' }} />
+          <Stack.Screen name="category/[id]" options={{ presentation: 'modal', headerShown: false }} />
+          <Stack.Screen name="add-lap" options={{ presentation: 'modal', headerShown: false }} />
         </Stack.Protected>
         <Stack.Protected guard={!onboarded} redirectTo="/">
           <Stack.Screen name="welcome" options={{ headerShown: false, animation: 'fade' }} />

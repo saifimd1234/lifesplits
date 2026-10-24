@@ -1,4 +1,5 @@
 import type { LifeGroup } from '@/constants/theme';
+import { defaultEmojiFor } from '@/lib/emoji';
 import { addDays, DAY, MINUTE, startOfDay } from '@/lib/time';
 import type { Category, Goal, Lap, Session } from '@/lib/types';
 
@@ -74,7 +75,7 @@ export function buildSampleData(now: number, id: () => string) {
     ['Spanish', 'other', spanish.id],
     ['Reading', 'other', reading.id],
   ];
-  const categories: Category[] = catDefs.map(([name, group, goalId]) => ({ id: id(), name, group, goalId }));
+  const categories: Category[] = catDefs.map(([name, group, goalId]) => ({ id: id(), name, emoji: defaultEmojiFor(name), group, goalId }));
   const byName = new Map(categories.map((c) => [c.name, c]));
 
   const sessions: Session[] = [];
@@ -101,9 +102,18 @@ export function buildSampleData(now: number, id: () => string) {
         note: step.notes && rand() < 0.5 ? step.notes[Math.floor(rand() * step.notes.length)] : '',
         energy: isGoal || rand() < 0.3 ? 2 + Math.floor(rand() * 4) : null,
         focus: isGoal || step.cat === 'Scrolling' ? (step.cat === 'Scrolling' ? 1 : 3 + Math.floor(rand() * 3)) : null,
+        // Goal laps tend to feel better than scrolling, so the mood patterns have something to show.
+        mood: isGoal ? 3 + Math.floor(rand() * 3) : step.cat === 'Scrolling' ? 1 + Math.floor(rand() * 2) : rand() < 0.4 ? 2 + Math.floor(rand() * 3) : null,
       });
       t += mins * MINUTE;
       if (t > day + DAY - 30 * MINUTE) break;
+    }
+    // Wind down until a realistic bedtime so sleep (the gap to the next day) looks like a real night.
+    const bedtime = day + 22 * 60 * MINUTE + Math.floor(rand() * 75) * MINUTE;
+    if (t < bedtime) {
+      const tv = byName.get('TV')!;
+      laps.push({ id: id(), sessionId: session.id, startedAt: t, endedAt: bedtime, categoryId: tv.id, goalId: null, note: '', energy: null, focus: null, mood: null });
+      t = bedtime;
     }
     session.endedAt = t;
     sessions.push(session);

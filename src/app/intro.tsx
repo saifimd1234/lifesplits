@@ -38,7 +38,7 @@ export default function IntroScreen() {
     },
     {
       title: 'Tap Lap when you switch',
-      body: 'Finished breakfast? Lap. Then say what that was, add a quick note, and rate your energy and focus. The next lap is already running.',
+      body: 'Finished breakfast? Lap. Then say what that was, add a quick note, and rate your energy, focus and mood. The next lap is already running.',
       art: <LapArt />,
     },
     {

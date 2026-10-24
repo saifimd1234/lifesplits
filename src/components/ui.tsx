@@ -91,6 +91,55 @@ export function LargeHeader({ overline, title, right }: { overline?: string; tit
   );
 }
 
+/** Cancel · title · action bar at the top of a modal sheet. */
+export function SheetHeader({
+  title,
+  subtitle,
+  onCancel,
+  action,
+  onAction,
+  actionDisabled,
+}: {
+  title: string;
+  subtitle?: string;
+  onCancel: () => void;
+  action: string;
+  onAction: () => void;
+  actionDisabled?: boolean;
+}) {
+  const t = useTheme();
+  const insets = useSafeAreaInsets();
+  return (
+    <View style={[styles.sheetHeader, { paddingTop: Platform.OS === 'ios' ? 12 : insets.top + 8, borderColor: t.separator }]}>
+      <Pressable onPress={onCancel} accessibilityRole="button" hitSlop={10} style={styles.sheetButton}>
+        <Txt variant="body" color={t.accent}>
+          Cancel
+        </Txt>
+      </Pressable>
+      <View style={{ alignItems: 'center', flexShrink: 1 }}>
+        <Txt variant="headline" numberOfLines={1}>
+          {title}
+        </Txt>
+        {subtitle ? (
+          <Txt variant="caption" tone="secondary" style={tabular}>
+            {subtitle}
+          </Txt>
+        ) : null}
+      </View>
+      <Pressable
+        onPress={onAction}
+        disabled={actionDisabled}
+        accessibilityRole="button"
+        hitSlop={10}
+        style={[styles.sheetButton, { alignItems: 'flex-end', opacity: actionDisabled ? 0.4 : 1 }]}>
+        <Txt variant="headline" color={t.accent}>
+          {action}
+        </Txt>
+      </Pressable>
+    </View>
+  );
+}
+
 export function Card({ children, style, padded = true }: { children: ReactNode; style?: StyleProp<ViewStyle>; padded?: boolean }) {
   const t = useTheme();
   return <View style={[{ backgroundColor: t.card, borderRadius: Radius.card }, padded && { padding: Spacing.four }, style]}>{children}</View>;
@@ -122,12 +171,14 @@ export function Chip({
   label,
   selected,
   onPress,
+  onLongPress,
   dashed,
   dot,
 }: {
   label: string;
   selected?: boolean;
   onPress?: () => void;
+  onLongPress?: () => void;
   dashed?: boolean;
   dot?: string;
 }) {
@@ -135,6 +186,7 @@ export function Chip({
   return (
     <Pressable
       onPress={onPress}
+      onLongPress={onLongPress}
       accessibilityRole="button"
       accessibilityState={{ selected: !!selected }}
       style={({ pressed }) => [
@@ -337,6 +389,8 @@ export function Empty({ title, body, action }: { title: string; body: string; ac
 const styles = StyleSheet.create({
   screenContent: { flexGrow: 1, alignItems: 'center' },
   column: { width: '100%', maxWidth: MaxContentWidth, paddingHorizontal: ScreenPadding },
+  sheetHeader: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingHorizontal: 20, paddingBottom: 10, borderBottomWidth: StyleSheet.hairlineWidth },
+  sheetButton: { minWidth: 64, minHeight: 44, justifyContent: 'center' },
   largeHeader: { flexDirection: 'row', alignItems: 'flex-end', justifyContent: 'space-between', paddingBottom: Spacing.four },
   chip: { flexDirection: 'row', alignItems: 'center', gap: 6, minHeight: 40, paddingHorizontal: 16, borderRadius: 20, borderWidth: 1 },
   dot: { width: 8, height: 8, borderRadius: 4 },

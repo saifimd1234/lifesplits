@@ -2,6 +2,7 @@ import { router } from 'expo-router';
 import { View } from 'react-native';
 
 import { GoalCard } from '@/components/goal-card';
+import { Trends } from '@/components/trends';
 import { Button, Card, Empty, IconButton, LargeHeader, Screen, Section, Tip, Txt } from '@/components/ui';
 import { LifeGroupLabels, Spacing, type LifeGroup } from '@/constants/theme';
 import { useNow } from '@/hooks/use-now';
@@ -62,6 +63,8 @@ export default function GoalsScreen() {
           </View>
         </>
       )}
+
+      <Trends goals={active} laps={laps} sessions={sessions} categories={categories} now={now} />
 
       {groups.length ? (
         <Section label="The rest of your week">

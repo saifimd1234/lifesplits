@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { Pressable, StyleSheet, View } from 'react-native';
 
 import { DayView } from '@/components/day-view';
+import { Feelings } from '@/components/feelings';
 import { Icon } from '@/components/icon';
 import { Bar, Card, Dot, Empty, Insight, LargeHeader, Screen, Section, Segmented, StackedBar, tabular, Tip, Txt } from '@/components/ui';
 import { Spacing } from '@/constants/theme';
@@ -100,7 +101,10 @@ export default function ReviewScreen() {
       </View>
 
       {period === 'day' ? (
-        <DayView dayStart={start} />
+        <>
+          <DayView dayStart={start} />
+          {tracked > 0 ? <Feelings start={start} end={clipEnd} /> : null}
+        </>
       ) : tracked === 0 ? (
         <Empty title="Nothing tracked yet" body="Once you run the clock in this period, you'll see where the time went." />
       ) : (
@@ -205,6 +209,8 @@ export default function ReviewScreen() {
               ))}
             </Section>
           ) : null}
+
+          <Feelings start={start} end={clipEnd} />
         </>
       )}
     </Screen>

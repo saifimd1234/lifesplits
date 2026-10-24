@@ -2,13 +2,14 @@ import * as Haptics from 'expo-haptics';
 import { router } from 'expo-router';
 import { Alert, Pressable, StyleSheet, View } from 'react-native';
 
-import { Button, Card, Dot, Empty, IconButton, LargeHeader, Screen, Section, Separator, StackedBar, tabular, Tip, Txt } from '@/components/ui';
+import { TodaySummary } from '@/components/today-summary';
+import { Button, Card, Dot, Empty, IconButton, LargeHeader, Screen, Section, Separator, tabular, Tip, Txt } from '@/components/ui';
 import { Spacing } from '@/constants/theme';
 import { useLapDisplay } from '@/hooks/use-lap-display';
 import { useNow } from '@/hooks/use-now';
 import { useTheme } from '@/hooks/use-theme';
 import { lapDuration, lapsInRange, trackedTime } from '@/lib/stats';
-import { addDays, formatClock, formatDate, formatPct, formatTime, startOfDay } from '@/lib/time';
+import { addDays, formatClock, formatDate, formatTime, startOfDay } from '@/lib/time';
 import { selectActiveSession, selectRunningLap, useAppStore } from '@/store/app-store';
 
 export default function TodayScreen() {
@@ -19,6 +20,7 @@ export default function TodayScreen() {
   const laps = useAppStore((s) => s.laps);
   const sessions = useAppStore((s) => s.sessions);
   const goals = useAppStore((s) => s.goals);
+  const categories = useAppStore((s) => s.categories);
   const startDay = useAppStore((s) => s.startDay);
   const lap = useAppStore((s) => s.lap);
   const endDay = useAppStore((s) => s.endDay);
@@ -28,9 +30,7 @@ export default function TodayScreen() {
   const todayLaps = lapsInRange(laps, dayStart, addDays(dayStart, 1), now);
   const closed = todayLaps.filter((l) => l.endedAt !== null).reverse();
   const tracked = trackedTime(sessions, dayStart, addDays(dayStart, 1), now);
-  const goalMs = todayLaps.reduce((a, l) => a + (l.goalId ? lapDuration(l, now) : 0), 0);
   const activeGoals = goals.filter((g) => !g.archived);
-  const targetPct = activeGoals.reduce((a, g) => a + g.targetPct, 0);
   const lapNumber = running ? laps.filter((l) => l.sessionId === running.sessionId).length : 0;
 
   const onStart = () => {
@@ -146,27 +146,7 @@ export default function TodayScreen() {
 
       {todayLaps.length ? (
         <Section>
-          <View style={styles.between}>
-            <Txt variant="subhead" style={{ fontWeight: '600' }}>
-              Today so far
-            </Txt>
-            {activeGoals.length ? (
-              <Txt variant="subhead" tone="secondary">
-                Goals <Txt variant="subhead" style={{ fontWeight: '600' }}>{formatPct(tracked ? goalMs / tracked : 0)}</Txt> · target {targetPct}%
-              </Txt>
-            ) : null}
-          </View>
-          <View style={{ marginTop: Spacing.two }}>
-            <StackedBar parts={todayLaps.map((l) => ({ key: l.id, ms: lapDuration(l, now), color: display.color(l) }))} height={10} />
-          </View>
-          <View style={[styles.between, { marginTop: 6 }]}>
-            <Txt variant="caption" tone="secondary">
-              {formatTime(todayLaps[0].startedAt)}
-            </Txt>
-            <Txt variant="caption" tone="secondary">
-              {session ? 'Now' : formatTime(todayLaps[todayLaps.length - 1].endedAt ?? now)}
-            </Txt>
-          </View>
+          <TodaySummary laps={todayLaps} categories={categories} goals={activeGoals} tracked={tracked} dayStart={dayStart} live={!!session} now={now} />
         </Section>
       ) : null}
 
@@ -202,6 +182,10 @@ export default function TodayScreen() {
           </Card>
         </Section>
       ) : null}
+
+      <Section style={{ marginTop: closed.length ? Spacing.two : Spacing.six }}>
+        <Button label="+ Add missed time" variant="plain" onPress={() => router.push('/add-lap')} accessibilityLabel="Add a lap for time you forgot to track" />
+      </Section>
     </Screen>
   );
 }

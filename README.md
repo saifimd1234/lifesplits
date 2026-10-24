@@ -72,16 +72,22 @@ You don't need Xcode or Android Studio to try the app — Expo Go runs it on you
 ### 2. Install
 
 ```bash
-git clone <your-repo-url> lifesplits
-cd lifesplits        # this folder (the one with package.json)
+git clone <your-repo-url> stopwatch_app
+cd stopwatch_app/mobile   # the app lives in mobile/ — that's where package.json is
 npm install
 ```
 
 ### 3. Run
 
+From the same `mobile/` folder:
+
 ```bash
 npx expo start
 ```
+
+`npm start` does the same thing. Note it's **`npx`** (runs a package's command), not `npm` — `npm expo start` fails with *Unknown command: "expo"*.
+
+> Already at the repo root? `npm install` and `npm start` work there too — they forward to `mobile/`.
 
 A QR code appears in the terminal:
 
@@ -126,6 +132,7 @@ The app identifiers are `app.lifesplits` for both stores (see `app.json`).
 <details>
 <summary><b>Troubleshooting</b></summary>
 
+- **`Could not read package.json` / `Unknown command: "expo"`** → you're in the wrong folder or typed `npm` for `npx`. Run `cd mobile`, then `npx expo start`.
 - **The QR code won't connect** → use `npx expo start --tunnel`, or make sure both devices are on the same network and no VPN is on.
 - **"Incompatible version" in Expo Go** → update Expo Go; this project targets SDK 58.
 - **Weird dependency errors** → run `npx expo install --fix`, then `npx expo-doctor`.
@@ -140,7 +147,7 @@ flowchart LR
     A([Wake up]) --> B[Tap Start]
     B --> C{Switch<br>activity?}
     C -- yes --> D[Tap Lap]
-    D --> E[Label it:<br>category · goal · note<br>energy · focus]
+    D --> E[Label it:<br>category · goal · note<br>energy · focus · mood]
     E --> C
     C -- going to bed --> F[Tap End day]
     F --> G[Review:<br>plan vs reality]
@@ -148,7 +155,7 @@ flowchart LR
 ```
 
 1. **Start the day.** On *Today*, tap **Start** when you wake up. The clock runs until you end the day.
-2. **Lap at every switch.** Finished breakfast? Tap **Lap**. A sheet asks *"What was that?"* — pick a category (your usual ones come first), and it fills in which goal it counts toward. Add a note or rate energy and focus if you like. The next lap is already running.
+2. **Lap at every switch.** Finished breakfast? Tap **Lap**. A sheet asks *"What was that?"* — pick a category (your usual ones come first), and it fills in which goal it counts toward. Add a note or rate energy, focus and mood (five emoji, from angry to excited) if you like. Review turns those ratings into patterns — which activities lift your mood, and when your energy peaks. The next lap is already running.
 3. **Give goals a share.** On *Goals*, tap **+**. Name it, pick a target date, guess the hours it needs, and decide what share of your waking time it deserves. The form tells you right away whether that plan fits.
 4. **Check the reality.** *Goals* shows your real share vs target for each goal, plus the date you'll actually finish. *Review* breaks down any day, week, month or year.
 5. **End the day.** Tap **End day** before sleep. Forgot to lap for a while? Tap any lap to fix it later.
@@ -324,7 +331,7 @@ scripts/docs/               Regenerates the README screenshots
 
 ## 🛣️ Roadmap
 
-- [x] Lap clock with labels, notes, energy and focus
+- [x] Lap clock with labels, notes, energy, focus and mood
 - [x] Goals with target share, effort estimate and honest finish dates
 - [x] Day / week / month / year review with drill-down
 - [x] Welcome screen, guided intro, one-time tips

@@ -17,6 +17,8 @@ export type Goal = {
 export type Category = {
   id: string;
   name: string;
+  /** Optional icon shown before the name; empty string for none. */
+  emoji: string;
   /** Laps in this category count toward this goal by default. */
   goalId: string | null;
   /** Where the time goes when it is not a goal. */
@@ -40,6 +42,8 @@ export type Lap = {
   note: string;
   energy: number | null;
   focus: number | null;
+  /** 1 = angry … 5 = excited. */
+  mood: number | null;
 };
 
 export type Period = 'day' | 'week' | 'month' | 'year';
