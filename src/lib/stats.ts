@@ -148,16 +148,17 @@ export function goalProgress(goal: Goal, laps: Lap[], sessions: Session[], now: 
   };
 }
 
-/** Goal hours per week, oldest first, for the goal detail chart. */
+/** Goal hours per week since the goal started (at most `weeks`), oldest first. */
 export function weeklyGoalHours(goal: Goal, laps: Lap[], now: number, weeks: number) {
   const thisWeek = startOfWeek(now);
-  const out: { label: string; ms: number; current: boolean }[] = [];
+  const out: { label: string; start: number; ms: number; current: boolean }[] = [];
   for (let i = weeks - 1; i >= 0; i--) {
     const start = addDays(thisWeek, -7 * i);
     const end = addDays(start, 7);
+    if (end <= goal.startDate) continue;
     let ms = 0;
     for (const l of laps) if (l.goalId === goal.id) ms += overlap(l.startedAt, l.endedAt ?? now, start, end);
-    out.push({ label: `Wk ${isoWeek(start)}`, ms, current: i === 0 });
+    out.push({ label: `Wk ${isoWeek(start)}`, start, ms, current: i === 0 });
   }
   return out;
 }

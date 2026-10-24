@@ -137,7 +137,7 @@ function ClockArt() {
         <Dot color={GOAL} />
         <Txt variant="headline">Workout</Txt>
       </View>
-      <Txt style={[{ fontSize: 56, fontWeight: '200', letterSpacing: -1.5 }, tabular]}>0:42:18</Txt>
+      <Txt style={[{ fontSize: 56, fontWeight: '200', letterSpacing: -1.5, lineHeight: 66 }, tabular]}>0:42:18</Txt>
       <Txt variant="subhead" tone="secondary">
         Lap 6 · Day 2:43:14
       </Txt>

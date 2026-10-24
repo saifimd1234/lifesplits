@@ -18,7 +18,7 @@ export type IconName =
 export function Icon({ name, size = 22, color, strokeWidth = 1.9 }: { name: IconName; size?: number; color: string; strokeWidth?: number }) {
   const common = { fill: 'none', stroke: color, strokeWidth, strokeLinecap: 'round' as const, strokeLinejoin: 'round' as const };
   return (
-    <Svg width={size} height={size} viewBox="0 0 24 24" accessibilityElementsHidden importantForAccessibility="no-hide-descendants">
+    <Svg width={size} height={size} viewBox="0 0 24 24" pointerEvents="none">
       {name === 'plus' && <Path d="M12 5v14M5 12h14" {...common} />}
       {name === 'minus' && <Path d="M5 12h14" {...common} />}
       {name === 'chevron-right' && <Path d="M9 18l6-6-6-6" {...common} />}

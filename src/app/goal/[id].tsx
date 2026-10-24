@@ -8,7 +8,7 @@ import { useLapDisplay } from '@/hooks/use-lap-display';
 import { useNow } from '@/hooks/use-now';
 import { useTheme } from '@/hooks/use-theme';
 import { goalProgress, lapDuration, trackedTime, weeklyGoalHours } from '@/lib/stats';
-import { addDays, formatDate, formatDuration, formatHours, formatPct, formatTime, HOUR, startOfWeek } from '@/lib/time';
+import { addDays, formatDate, formatDuration, formatHours, formatPct, formatTime, HOUR } from '@/lib/time';
 import { useAppStore } from '@/store/app-store';
 
 const WEEKS = 6;
@@ -38,12 +38,8 @@ export default function GoalDetail() {
   const p = goalProgress(goal, laps, sessions, now);
   const slip = slipLabel(p);
   const weeks = weeklyGoalHours(goal, laps, now, WEEKS);
-  const thisWeek = startOfWeek(now);
   const trackedWeeks = weeks
-    .map((_, i) => {
-      const start = addDays(thisWeek, -7 * (WEEKS - 1 - i));
-      return trackedTime(sessions, start, Math.min(addDays(start, 7), now), now);
-    })
+    .map((w) => trackedTime(sessions, w.start, Math.min(addDays(w.start, 7), now), now))
     .filter((ms) => ms > 0);
   const avgTracked = trackedWeeks.length ? trackedWeeks.reduce((a, b) => a + b, 0) / trackedWeeks.length : 0;
   const weeklyTarget = avgTracked * (goal.targetPct / 100);
@@ -87,7 +83,11 @@ export default function GoalDetail() {
         options={{
           title: '',
           headerRight: () => (
-            <Pressable onPress={() => router.push({ pathname: '/new-goal', params: { id: goal.id } })} accessibilityRole="button" hitSlop={10}>
+            <Pressable
+              onPress={() => router.push({ pathname: '/new-goal', params: { id: goal.id } })}
+              accessibilityRole="button"
+              hitSlop={10}
+              style={{ paddingHorizontal: 8 }}>
               <Txt variant="body" color={t.accent}>
                 Edit
               </Txt>

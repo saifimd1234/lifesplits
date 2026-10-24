@@ -1,4 +1,3 @@
-import Storage from 'expo-sqlite/kv-store';
 import { useSyncExternalStore } from 'react';
 import { create } from 'zustand';
 import { createJSONStorage, persist } from 'zustand/middleware';
@@ -7,6 +6,7 @@ import type { LifeGroup } from '@/constants/theme';
 import { startOfDay } from '@/lib/time';
 import type { Category, Goal, Lap, Session } from '@/lib/types';
 import { buildSampleData } from '@/store/sample-data';
+import { persistStorage } from '@/store/storage';
 
 export const newId = () => Date.now().toString(36) + Math.random().toString(36).slice(2, 8);
 
@@ -196,7 +196,7 @@ export const useAppStore = create<Data & Actions>()(
     {
       name: 'lifesplits-store',
       version: 1,
-      storage: createJSONStorage(() => Storage),
+      storage: createJSONStorage(() => persistStorage),
     },
   ),
 );

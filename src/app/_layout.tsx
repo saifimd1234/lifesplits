@@ -38,14 +38,14 @@ export default function RootLayout() {
           headerBackButtonDisplayMode: 'minimal',
           contentStyle: { backgroundColor: t.background },
         }}>
-        <Stack.Protected guard={onboarded}>
+        <Stack.Protected guard={onboarded} redirectTo="/welcome">
           <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
           <Stack.Screen name="goal/[id]" options={{ title: '' }} />
           <Stack.Screen name="settings" options={{ title: 'Settings' }} />
           <Stack.Screen name="lap/[id]" options={{ presentation: 'modal', headerShown: false }} />
           <Stack.Screen name="new-goal" options={{ presentation: 'modal', headerShown: false }} />
         </Stack.Protected>
-        <Stack.Protected guard={!onboarded}>
+        <Stack.Protected guard={!onboarded} redirectTo="/">
           <Stack.Screen name="welcome" options={{ headerShown: false, animation: 'fade' }} />
           <Stack.Screen name="intro" options={{ headerShown: false }} />
         </Stack.Protected>
