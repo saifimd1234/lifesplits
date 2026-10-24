@@ -20,6 +20,12 @@
 </p>
 
 <p align="center">
+  <a href="https://github.com/saifimd1234/lifesplits/releases/latest/download/LifeSplits.apk"><img alt="Download APK for Android" src="https://img.shields.io/badge/Download-Android%20APK-0F766E?style=for-the-badge&logo=android&logoColor=white"></a>
+  <a href="https://github.com/saifimd1234/lifesplits/releases/latest"><img alt="Latest release" src="https://img.shields.io/github/v/release/saifimd1234/lifesplits?style=for-the-badge&label=release&color=C2410C"></a>
+</p>
+
+<p align="center">
+  <a href="#-download">Download</a> ·
   <a href="#-the-idea">The idea</a> ·
   <a href="#-see-it-in-action">See it in action</a> ·
   <a href="#-quick-start">Quick start</a> ·
@@ -31,6 +37,22 @@
 </p>
 
 ---
+
+## 📥 Download
+
+Want to try it on your phone? No store, no account.
+
+### Android — install the APK
+
+1. On your phone, open **[LifeSplits.apk](https://github.com/saifimd1234/lifesplits/releases/latest/download/LifeSplits.apk)** (or pick a version on the [Releases](https://github.com/saifimd1234/lifesplits/releases) page).
+2. Open the downloaded file. If Android asks, allow your browser or file manager to **install unknown apps**.
+3. Tap **Install**. Play Protect may warn that the app is from an unknown developer — tap **Install anyway**.
+
+Works on Android 7.0+ phones (ARM). It's a test build signed with a debug key, so to move to a newer version later you may need to uninstall the old one first.
+
+### iPhone — use Expo Go
+
+Apple doesn't allow installing apps from a file, so there's no `.ipa` to download. To try it on an iPhone, install **[Expo Go](https://apps.apple.com/app/expo-go/id982107779)** and run the app from source (see [Quick start](#-quick-start) — it takes about two minutes). TestFlight builds need an Apple Developer account and may come later.
 
 ## 💡 The idea
 
@@ -72,22 +94,20 @@ You don't need Xcode or Android Studio to try the app — Expo Go runs it on you
 ### 2. Install
 
 ```bash
-git clone <your-repo-url> stopwatch_app
-cd stopwatch_app/mobile   # the app lives in mobile/ — that's where package.json is
+git clone https://github.com/saifimd1234/lifesplits.git
+cd lifesplits
 npm install
 ```
 
 ### 3. Run
 
-From the same `mobile/` folder:
+From the same folder:
 
 ```bash
 npx expo start
 ```
 
 `npm start` does the same thing. Note it's **`npx`** (runs a package's command), not `npm` — `npm expo start` fails with *Unknown command: "expo"*.
-
-> Already at the repo root? `npm install` and `npm start` work there too — they forward to `mobile/`.
 
 A QR code appears in the terminal:
 
@@ -116,7 +136,15 @@ On web, data is kept in the browser's `localStorage` and the tab bar is a web st
 <details>
 <summary><b>Build a real app (APK / TestFlight)</b></summary>
 
-Builds run in the cloud with [EAS](https://docs.expo.dev/eas/):
+**Releases build themselves.** Publishing a GitHub release runs [`.github/workflows/release-android.yml`](.github/workflows/release-android.yml), which builds the APK with Gradle and attaches it to the release as `LifeSplits.apk`:
+
+```bash
+gh release create v1.1.0 --generate-notes
+```
+
+To rebuild the APK for an existing release, run the workflow from the **Actions** tab and enter its tag.
+
+Or build in the cloud with [EAS](https://docs.expo.dev/eas/):
 
 ```bash
 npx eas-cli@latest login
@@ -132,7 +160,7 @@ The app identifiers are `app.lifesplits` for both stores (see `app.json`).
 <details>
 <summary><b>Troubleshooting</b></summary>
 
-- **`Could not read package.json` / `Unknown command: "expo"`** → you're in the wrong folder or typed `npm` for `npx`. Run `cd mobile`, then `npx expo start`.
+- **`Could not read package.json` / `Unknown command: "expo"`** → you're in the wrong folder or typed `npm` for `npx`. Run `cd lifesplits`, then `npx expo start`.
 - **The QR code won't connect** → use `npx expo start --tunnel`, or make sure both devices are on the same network and no VPN is on.
 - **"Incompatible version" in Expo Go** → update Expo Go; this project targets SDK 58.
 - **Weird dependency errors** → run `npx expo install --fix`, then `npx expo-doctor`.
